@@ -1,5 +1,4 @@
 export function openModal (element) {
-    console.log(element)
     document.querySelector(".page__content").addEventListener("click", overlayHendler);
     document.addEventListener("keydown", escapeHendler)
     element.classList.add("popup_is-opened");

@@ -47,7 +47,6 @@ function addCardHendler(e){
 
 function submitAddCardHendler (e) {
     e.preventDefault();
-    console.log(e.target);
     document.querySelector(".places__list").prepend(createCard({link: e.target.elements.link.value, name: e.target.elements['place-name'].value}, cardLike, cardImgHendler, deleteCard));
     e.target.removeEventListener("submit", submitAddCardHendler)
     e.target.reset();
@@ -56,7 +55,6 @@ function submitAddCardHendler (e) {
 
 
 export function cardImgHendler (e) {
-    console.log(e.target);
     document.querySelector('.popup__image').setAttribute("src", e.target.src);
     document.querySelector('.popup__caption').textContent = e.target.alt;
     openModal(popupTypeImage)
