@@ -1,6 +1,6 @@
 const cardTemplate = document.querySelector("#card-template").content;
 
-export function createCard (cardData, cardLike, cardImgHendler, deleteCard) {
+export function createCard (cardData, handlers) {
 
     const newCard = cardTemplate.querySelector(".card").cloneNode(true);
     const cardImg = newCard.querySelector(".card__image");
@@ -8,9 +8,9 @@ export function createCard (cardData, cardLike, cardImgHendler, deleteCard) {
     cardImg.alt = cardData.name;
     newCard.querySelector(".card__title").textContent = cardData.name;
   
-    newCard.querySelector(".card__delete-button").addEventListener("click", deleteCard);
-    newCard.querySelector(".card__image").addEventListener("click", cardImgHendler)
-    newCard.querySelector(".card__like-button").addEventListener("click", cardLike)
+    newCard.querySelector(".card__delete-button").addEventListener("click", handlers.deleteCard);
+    cardImg.addEventListener("click", handlers.cardImgHandler)
+    newCard.querySelector(".card__like-button").addEventListener("click", handlers.cardLike)
     
     return newCard;
 } 

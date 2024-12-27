@@ -17,57 +17,66 @@ const popupTypeImage = document.querySelector(".popup_type_image");
 const editProfileButton = document.querySelector('.profile__edit-button');
 const profileAddButton = document.querySelector('.profile__add-button');
 
-const popupCloseButton = document.querySelectorAll(".popup__close");
+const popupCloseButtons = document.querySelectorAll(".popup__close");
 
-editProfileButton.addEventListener("click", editProfileHendler)
-profileAddButton.addEventListener("click", addCardHendler)
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+const popupImage = document.querySelector('.popup__image');
+const popupCaption = document.querySelector('.popup__caption');
 
-function editProfileHendler (e) {
+editProfileButton.addEventListener("click", editProfileHandler)
+profileAddButton.addEventListener("click", addCardHandler)
+
+document.forms['edit-profile'].addEventListener('submit', submitEditProfileHandler);
+document.forms['new-place'].addEventListener("submit", submitAddCardHandler);
+
+
+function editProfileHandler (e) {
     openModal(popupTypeEdit)
     const form = document.forms['edit-profile'];
-    form.elements.name.value = document.querySelector('.profile__title').textContent;
-    form.elements.description.value = document.querySelector('.profile__description').textContent;
-    form.addEventListener('submit', submitEditProfileHendler); 
+    form.elements.name.value = profileTitle.textContent;
+    form.elements.description.value = profileDescription.textContent;
 }
 
-function submitEditProfileHendler (e){
+function submitEditProfileHandler (e){
     e.preventDefault();
-    document.querySelector('.profile__title').textContent = e.target.elements.name.value;
-    document.querySelector('.profile__description').textContent = e.target.elements.description.value;
-    e.target.removeEventListener("submit", submitEditProfileHendler)
+    profileTitle.textContent = e.target.elements.name.value;
+    profileDescription.textContent = e.target.elements.description.value;
     closeModal(popupTypeEdit);
 }
 
 
-function addCardHendler(e){
+function addCardHandler(e){
     openModal(popupTypeNewCard)
-    const addForm = document.forms['new-place'];
-    addForm.addEventListener("submit", submitAddCardHendler)
 }
 
-function submitAddCardHendler (e) {
+function submitAddCardHandler (e) {
     e.preventDefault();
-    document.querySelector(".places__list").prepend(createCard({link: e.target.elements.link.value, name: e.target.elements['place-name'].value}, cardLike, cardImgHendler, deleteCard));
-    e.target.removeEventListener("submit", submitAddCardHendler)
+    renderCard({link: e.target.elements.link.value, name: e.target.elements['place-name'].value})
     e.target.reset();
     closeModal(popupTypeNewCard);
 }
 
 
-export function cardImgHendler (e) {
-    document.querySelector('.popup__image').setAttribute("src", e.target.src);
-    document.querySelector('.popup__caption').textContent = e.target.alt;
+function cardImgHandler (e) {
+    popupImage.setAttribute("src", e.target.src);
+    popupImage.setAttribute("alt", e.target.alt);
+    popupCaption.textContent = e.target.alt;
     openModal(popupTypeImage)
 }
 
 
-popupCloseButton.forEach(button => {
-    button.addEventListener("click", (e) => {
-        closeModal(document.querySelector(".popup_is-opened"))
-    });
+popupCloseButtons.forEach((button) => { 
+    const popup = button.closest('.popup');
+    button.addEventListener('click', (e) => closeModal(popup));
 });
 
 
 initialCards.map((item) => {
-    cardsList.append(createCard(item, cardLike, cardImgHendler, deleteCard));
+    renderCard(item, "append");
 })
+
+function renderCard(item, method = "prepend") {
+    const cardElement = createCard(item, {cardLike, cardImgHandler, deleteCard});
+    cardsList[ method ](cardElement);
+}
