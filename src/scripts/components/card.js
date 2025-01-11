@@ -1,9 +1,8 @@
-import {userId} from '../index';
 import { deleteCardServer, deleteLike, putLike } from './api';
 
 const cardTemplate = document.querySelector("#card-template").content;
 
-export function createCard (cardData, handlers) {
+export function createCard (cardData, handlers, userId) {
 
     const newCard = cardTemplate.querySelector(".card").cloneNode(true);
     const cardImg = newCard.querySelector(".card__image");
@@ -13,19 +12,16 @@ export function createCard (cardData, handlers) {
     cardImg.alt = cardData.name;
     newCard.querySelector(".card__title").textContent = cardData.name;
     newCard.querySelector(".card__delete-button").addEventListener("click", (e) => {
-        deleteCardServer(cardData._id).catch((err) => {
-            console.log(err);
-        });
-        deleteCard(e);
+        deleteCardServer(cardData._id).then(() => {deleteCard(e)}).catch((err) => {console.log(err)});
     });
     cardImg.addEventListener("click", handlers.cardImgHandler)
     likeButton.addEventListener("click", (e) => {
         e.preventDefault();
-        handlers.cardLike(e);
         if(cardData.likes.find(user => user._id === userId)){
             deleteLike(cardData._id).then((result) => {
                 cardLikeCount.textContent = result.likes.length
                 cardData.likes = result.likes;
+                handlers.cardLike(e);
             })
             .catch((err) => {
                 console.log(err);
@@ -34,6 +30,7 @@ export function createCard (cardData, handlers) {
             putLike(cardData._id).then((result) => {
                 cardLikeCount.textContent = result.likes.length
                 cardData.likes = result.likes;
+                handlers.cardLike(e);
             })
             .catch((err) => {
                 console.log(err);

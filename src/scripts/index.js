@@ -54,14 +54,14 @@ function submitChangeAvatarHandler (e) {
     const avatarLink = e.target.elements.link.value;
     patchAvatar(avatarLink).then(() => {
         closeModal(popupTypeAvatar)
-        e.target.querySelector(".popup__button").textContent = "Сохранить";
         clearValidation(e.target, validationConfig);
         e.target.reset();
+        profileImage.style.backgroundImage = `url(${avatarLink})`;
     })
     .catch((err) => {
         console.log(err);
-    }); 
-    profileImage.style.backgroundImage = `url(${avatarLink})`;
+    })
+    .finally(() => {e.target.querySelector(".popup__button").textContent = "Сохранить"})
 }
 
 function editProfileHandler (e) {
@@ -78,12 +78,12 @@ function submitEditProfileHandler (e){
     patchUserInfo(e.target.elements.name.value, e.target.elements.description.value).then((userData) => {
         profileTitle.textContent = userData.name;
         profileDescription.textContent = userData.about;
-        e.target.querySelector(".popup__button").textContent = "Сохранить";
         closeModal(popupTypeEdit);
     })
     .catch((err) => {
         console.log(err);
-    });
+    })
+    .finally(() => {e.target.querySelector(".popup__button").textContent = "Сохранить"});
 }
 
 
@@ -96,14 +96,14 @@ function submitAddCardHandler (e) {
     e.target.querySelector(".popup__button").textContent = "Сохранение...";
     postNewCard(e.target.elements['place-name'].value, e.target.elements.link.value).then((card) => {
         renderCard(card)
-        e.target.querySelector(".popup__button").textContent = "Сохранить";
         closeModal(popupTypeNewCard);
+        e.target.reset();
+        clearValidation(e.target, validationConfig)
     })
     .catch((err) => {
         console.log(err);
-    }); 
-    e.target.reset();
-    clearValidation(e.target, validationConfig)
+    })
+    .finally(() => {e.target.querySelector(".popup__button").textContent = "Сохранить"})  
 }
 
 
@@ -121,13 +121,13 @@ popupCloseButtons.forEach((button) => {
 });
 
 function renderCard(item, method = "prepend") {
-    const cardElement = createCard(item, {cardLike, cardImgHandler, deleteCard});
+    const cardElement = createCard(item, {cardLike, cardImgHandler, deleteCard}, userId);
     cardsList[ method ](cardElement);
 }
 
 enableValidation(validationConfig); 
 
-export let userId = "";
+let userId = "";
 
 Promise.all([getUserInfo(), getCards()])
 .then(([userData, cards]) => {
